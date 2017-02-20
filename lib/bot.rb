@@ -7,14 +7,15 @@ require 'json'
 module Fastlane
   class Bot
     SLUG = ENV['REPO_TO_REAP']
+    DEBUG_MODE = ENV['DEBUG_MODE'] || false
     ISSUE_WARNING = 0.75
     ISSUE_CLOSED = 0.25 # plus the x months from ISSUE_WARNING
 
     # Labels
-    SCHEDULED_FOR_REAPING = "scheduled-for-reaping"
-    REAPED = "reaped"
+    SCHEDULED_FOR_REAPING = 'scheduled-for-reaping'
+    REAPED = 'reaped'
     DO_NOT_REAP = 'do-not-reap'
-    LABELS_TO_REAP = "operations"
+    LABELS_TO_REAP = 'Operations'
 
     def client
       @client ||= Octokit::Client.new(access_token: ENV["GITHUB_API_TOKEN"])
@@ -26,22 +27,26 @@ module Fastlane
       # can only continue to get worse, since we look at every issue ever.
       client.auto_paginate = false
 
-      puts "Fetching issues and PRs from '#{SLUG}'..."
-
+      puts "Fetching issues from '#{SLUG}'..."
+      if DEBUG_MODE
+        puts "------------- DEBUG MODE -------------"
+      end
       # Doing pagination ourself is a pain, but it's important for keeping a
       # reasonable memory footprint
       page = 1
       issues_page = fetch_issues(page)
 
       while issues_page && issues_page.any?
+        issue_count = 0
         # It's important that we check this immediately, as calls we make during
         # processing will affect the last_response
         has_next_page = !!client.last_response.rels[:next]
 
         issues_page.each do |issue|
-          if process == :issues && issue.pull_request.nil?
-            puts "Investigating issue ##{issue.number}..."
+          if process == :issues && issue.pull_request.nil? # rubocop:disable Style/Next
+            puts "Investigating issue ##{issue.number} (#{issue.title})..."
             process_open_issue(issue) if issue.state == "open"
+            issue_count += 1
           end
         end
 
@@ -50,7 +55,7 @@ module Fastlane
         issues_page = has_next_page ? fetch_issues(page) : nil
       end
 
-      puts "[SUCCESS] I worked through issues, much faster than human beings, bots will take over"
+      puts "[SUCCESS] I worked through #{issue_count} issues, much faster than human beings, bots will take over"
     end
 
     def fetch_issues(page = 1)
@@ -86,13 +91,21 @@ module Fastlane
           puts "https://github.com/#{SLUG}/issues/#{issue.number} (#{issue.title}) is #{diff_in_months.round(1)} months old, closing now"
           body = []
           body << "This issue will be auto-closed because there hasn't been any activity for a month. Feel free to [open a new one](https://github.com/#{SLUG}/issues/new) if you still experience this problem 👍"
-          client.add_comment(SLUG, issue.number, body.join("\n\n"))
-          client.close_issue(SLUG, issue.number)
-          client.add_labels_to_an_issue(SLUG, issue.number, [REAPED])
+          if DEBUG_MODE
+            puts "{DEBUG_MODE} Would reap issue ##{issue.number}"
+          else
+            client.add_comment(SLUG, issue.number, body.join("\n\n"))
+            client.close_issue(SLUG, issue.number)
+            client.add_labels_to_an_issue(SLUG, issue.number, [REAPED])
+          end
         else
           # User replied, let's remove the label
           puts "https://github.com/#{SLUG}/issues/#{issue.number} (#{issue.title}) was replied to by a different user"
-          client.remove_label(SLUG, issue.number, SCHEDULED_FOR_REAPING)
+          if DEBUG_MODE
+            puts "{DEBUG_MODE} recently active, so don't reap issue ##{issue.number}"
+          else
+            client.remove_label(SLUG, issue.number, SCHEDULED_FOR_REAPING)
+          end
         end
         smart_sleep
       elsif diff_in_months > ISSUE_WARNING
@@ -100,9 +113,13 @@ module Fastlane
 
         puts "https://github.com/#{SLUG}/issues/#{issue.number} (#{issue.title}) is #{diff_in_months.round(1)} months old, pinging now"
         body = []
-        body << "There hasn't been any activity on this issue recently. To keep us focused, we have to clean some of the old issues, as many of them have already been resolved with the latest updates."
-        client.add_comment(SLUG, issue.number, body.join("\n\n"))
-        client.add_labels_to_an_issue(SLUG, issue.number, [SCHEDULED_FOR_REAPING])
+        body << "There hasn't been any activity on this issue recently. To keep us focused, we will close this issue in 30 days unless the #{DO_NOT_REAP} label is added"
+        if DEBUG_MODE
+          puts "{DEBUG_MODE} stale issue, so schedule for reaping issue ##{issue.number}"
+        else
+          client.add_comment(SLUG, issue.number, body.join("\n\n"))
+          client.add_labels_to_an_issue(SLUG, issue.number, [SCHEDULED_FOR_REAPING])
+        end
         smart_sleep
       end
     end
