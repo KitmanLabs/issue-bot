@@ -6,7 +6,7 @@ Gem::Specification.new do |s|
   s.description = "Github Issue Reaper"
   s.authors     = ["Felix Krause", "Colm Doyle"]
   s.email       = 'colm@kitmanlabs.com'
-  s.files       = ["lib/bot.rb"]
+  s.files       = ["lib/**"]
   s.homepage    =
     'https://github.com/KitmanLabs/issue-bot'
   s.license = 'MIT'
