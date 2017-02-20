@@ -10,4 +10,11 @@ Gem::Specification.new do |s|
   s.homepage    =
     'https://github.com/KitmanLabs/issue-bot'
   s.license = 'MIT'
+
+  s.add_runtime_dependency "octokit", "~> 4.0"
+  s.add_runtime_dependency "pry"
+  s.add_runtime_dependency "excon"
+  s.add_runtime_dependency "colored"
+  s.add_runtime_dependency "rake"
+  s.add_runtime_dependency "rubocop"
 end

@@ -1,3 +1,14 @@
+PATH
+  remote: .
+  specs:
+    issue-bot (0.0.1)
+      colored
+      excon
+      octokit (~> 4.0)
+      pry
+      rake
+      rubocop
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -38,12 +49,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  colored
-  excon
-  octokit (~> 4.0)
-  pry
-  rake
-  rubocop
+  issue-bot!
 
 BUNDLED WITH
    1.13.6
