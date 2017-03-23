@@ -113,7 +113,7 @@ module Fastlane
 
         puts "https://github.com/#{SLUG}/issues/#{issue.number} (#{issue.title}) is #{diff_in_months.round(1)} months old, pinging now"
         body = []
-        body << "There hasn't been any activity on this issue recently. To keep us focused, we will close this issue in 30 days unless the #{DO_NOT_REAP} label is added"
+        body << "There hasn't been any activity on this issue recently. To keep us focused, we will close this issue in the next few days unless the #{DO_NOT_REAP} label is added"
         if DEBUG_MODE
           puts "{DEBUG_MODE} stale issue, so schedule for reaping issue ##{issue.number}"
         else
