@@ -8,8 +8,8 @@ module Fastlane
   class Bot
     SLUG = ENV['REPO_TO_REAP']
     DEBUG_MODE = ENV['DEBUG_MODE'] || false
-    ISSUE_WARNING = 0.75
-    ISSUE_CLOSED = 0.25 # plus the x months from ISSUE_WARNING
+    ISSUE_WARNING = 1.5
+    ISSUE_CLOSED = 0.5 # plus the x months from ISSUE_WARNING
 
     # Labels
     SCHEDULED_FOR_REAPING = 'scheduled-for-reaping'
@@ -113,7 +113,7 @@ module Fastlane
 
         puts "https://github.com/#{SLUG}/issues/#{issue.number} (#{issue.title}) is #{diff_in_months.round(1)} months old, pinging now"
         body = []
-        body << "There hasn't been any activity on this issue recently. To keep us focused, we will close this issue in the next few days unless the #{DO_NOT_REAP} label is added"
+        body << "There hasn't been any activity on this issue recently. To keep us focused, we will close this issue in the next two weeks unless the #{DO_NOT_REAP} label is added"
         if DEBUG_MODE
           puts "{DEBUG_MODE} stale issue, so schedule for reaping issue ##{issue.number}"
         else
