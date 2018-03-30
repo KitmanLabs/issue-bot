@@ -12,9 +12,9 @@ module Fastlane
     ISSUE_CLOSED = 0.5 # plus the x months from ISSUE_WARNING
 
     # Labels
-    SCHEDULED_FOR_REAPING = 'scheduled-for-reaping'
-    REAPED = 'reaped'
-    DO_NOT_REAP = 'do-not-reap'
+    SCHEDULED_FOR_REAPING = 'Process: scheduled-for-reaping'
+    REAPED = 'Process: Reaped'
+    DO_NOT_REAP = 'Process: do-not-reap'
     LABELS_TO_REAP = 'Operations'
 
     def client
