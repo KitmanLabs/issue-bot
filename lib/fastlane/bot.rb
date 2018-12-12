@@ -15,7 +15,7 @@ module Fastlane
     SCHEDULED_FOR_REAPING = 'Process: scheduled-for-reaping'
     REAPED = 'Process: Reaped'
     DO_NOT_REAP = 'Process: do-not-reap'
-    LABELS_TO_REAP = 'Operations'
+    LABELS_TO_REAP = 'Eng: Operations 🏥'
 
     def client
       @client ||= Octokit::Client.new(access_token: ENV["GITHUB_API_TOKEN"])
