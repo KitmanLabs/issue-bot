@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name        = 'issue-bot'
-  s.version     = '0.0.2'
+  s.version     = '0.0.3'
   s.date        = '2017-01-01'
   s.summary     = "Reaps Github Issues"
   s.description = "Github Issue Reaper"
