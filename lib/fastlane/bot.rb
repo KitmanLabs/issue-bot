@@ -77,6 +77,20 @@ module Fastlane
       issue.labels? && !!issue.labels.find { |label| label.name == label_name }
     end
 
+    def at_issue_participants(issue)
+      issue_participants = []
+
+      # Issue creator
+      issue_participants << "@#{issue.user.login}"
+
+      # Issue assignees
+      issue.assignees.each do |assignee|
+        issue_participants << "@#{assignee.login}"
+      end
+
+      issue_participants.uniq.join(" ")
+    end
+
     # Responsible for commenting to inactive issues, and closing them after a while
     def process_inactive(issue)
       return if has_label?(issue, DO_NOT_REAP) # Ignore issues tagged do-not-reap
@@ -91,6 +105,7 @@ module Fastlane
           puts "https://github.com/#{SLUG}/issues/#{issue.number} (#{issue.title}) is #{diff_in_months.round(1)} months old, closing now"
           body = []
           body << "This issue will be auto-closed because there hasn't been any activity for a month. Feel free to [open a new one](https://github.com/#{SLUG}/issues/new) if you still experience this problem 👍"
+          body << at_issue_participants(issue)
           if DEBUG_MODE
             puts "{DEBUG_MODE} Would reap issue ##{issue.number}"
           else
@@ -114,6 +129,7 @@ module Fastlane
         puts "https://github.com/#{SLUG}/issues/#{issue.number} (#{issue.title}) is #{diff_in_months.round(1)} months old, pinging now"
         body = []
         body << "There hasn't been any activity on this issue recently. To keep us focused, we will close this issue in the next two weeks unless the #{DO_NOT_REAP} label is added"
+        body << at_issue_participants(issue)
         if DEBUG_MODE
           puts "{DEBUG_MODE} stale issue, so schedule for reaping issue ##{issue.number}"
         else
