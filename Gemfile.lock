@@ -17,7 +17,7 @@ GEM
     ast (2.4.0)
     coderay (1.1.2)
     colored (1.2)
-    excon (0.62.0)
+    excon (0.76.0)
     faraday (0.15.4)
       multipart-post (>= 1.2, < 3)
     jaro_winkler (1.5.1)
