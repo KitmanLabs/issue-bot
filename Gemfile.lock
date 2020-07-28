@@ -34,7 +34,7 @@ GEM
       method_source (~> 0.9.0)
     public_suffix (3.0.3)
     rainbow (3.0.0)
-    rake (12.3.2)
+    rake (13.0.1)
     rubocop (0.61.1)
       jaro_winkler (~> 1.5.1)
       parallel (~> 1.10)
